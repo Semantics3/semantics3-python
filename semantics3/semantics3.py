@@ -73,6 +73,11 @@ class Products(Semantics3Request):
 
 	def get_categories(self):
 		self._run_query("categories", self.categories_query)
+		return self.query_result
+	
+	def get_products(self):
+		self._run_query("products", self.products_query)
+		return self.query_result
 
 	def products_field(self, *fields):
 		ancestors = fields[:-2]
