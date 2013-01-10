@@ -24,12 +24,12 @@ class Semantics3Request(object):
 				http_method='GET',
 				http_url = api_endpoint,
 				parameters = {'q': params}
-				)
+			)
 		oauth_request.sign_request(
 				oauth.OAuthSignatureMethod_HMAC_SHA1(),
 				self.consumer,
 				self.access_token
-				)
+			)
 		connection = httplib.HTTPSConnection(API_DOMAIN)
 
 		api_request_url = oauth_request.to_url()
@@ -49,12 +49,77 @@ class Products(Semantics3Request):
 		self.products_query = {}
 		self.categories_query = {}
 		self.query_result = {}
+
+
 	def test(self):
 		pp = pprint.PrettyPrinter(indent=4)
 		#self.query_result = json.loads(Semantics3Request.fetch(self,"products",'{"cat_id":4992,"brand":"Toshiba"}'))
+		"""
 		self.query_result = self.query("products",
 				cat_id = 4992,
 				brand  = "Toshiba"
-				)
+			)
 		pp.pprint(self.query_result)
+		"""
+		self.products_field('test1','test2','test3')
+		self.products_field('test2','test2','test3')
+		self.products_field('test2','test4','test3')
+		self.products_field('test1','test3','test4')
+		self.products_field('test3','val3','test4')
+		print self.products_query
+
+	def category_field(self, field_name, field_value):
+		self.categories_query[field_name] = field_value
+
+	def get_categories(self):
+		self._run_query("categories", self.categories_query)
+
+	def products_field(self, *fields):
+		ancestors = fields[:-2]
+		parent = self.products_query
+		for i in ancestors:
+			parent = parent.setdefault(i, {}) 
+		parent[fields[-2]] = fields[-1]
+
+	def sitedetails(self, field_name, field_value1, *field_value2):
+		self.products_field(
+				"sitedetails", 
+				field_name,
+				field_value1,
+				*field_value2
+			)
+
+	def latestoffers(self, field_name, field_value1, field_value2):
+		self.products_field(
+				"sitedetails",
+				"latestoffers",
+				field_name,
+				field_value1,
+				*field_value2
+			)
+
+	def limit(self, limit):
+		self.products_field("limit",limit)
+	
+	def offset(self, offset):
+		self.products_field("offset",offset)
+	
+	def sort_list(self, sort_field, sort_value):
+		self.products_field("sort", sort_field, sort_value)
+
+	def iter(self):
+		pass
+	
+	
+	def query_json(self, endpoint, json_str):
+		self._run_query(endpoint, json.loads(json_str))
+		return self.query_result
+
+	def clear_query(self):
+		self.categories_query = {}
+		self.products = {}
+		self.query_result = {}
+
+	def _run_query(self, endpoint, query_ref={}):
+		self.query_result = self.query(endpoint, **query_ref)
 
