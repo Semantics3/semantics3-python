@@ -86,6 +86,16 @@ class Products(Semantics3Request):
 			parent = parent.setdefault(i, {}) 
 		parent[fields[-2]] = fields[-1]
 
+	def remove_products_field(self, *fields):
+		def remove(path, hash):
+			if len(path) == 1:
+				del hash[path[0]]
+			else:
+				remove(path[1:],hash[path[0]])
+				if not hash[path[0]]:
+					del hash[path[0]]
+		remove(fields,self.products_query)
+
 	def sitedetails(self, field_name, field_value1, *field_value2):
 		self.products_field(
 				"sitedetails", 
