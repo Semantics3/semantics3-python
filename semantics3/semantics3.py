@@ -16,7 +16,7 @@ class Semantics3Request:
 		self.data_query   = {}
 		self.query_result = None
 
-	def fetch(self, endpoint, params):
+	def fetch(self,endpoint,params):
 		api_endpoint = API_BASE + endpoint
 
 		oauth_request = oauth.OAuthRequest.from_consumer_and_token(
@@ -93,3 +93,4 @@ class Semantics3Request:
 	def clear_query(self):
 		self.data_query = {}
 		self.query_result = {}
+
