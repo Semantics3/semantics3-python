@@ -1,45 +1,27 @@
 import json
-from oauth import oauth
-import httplib
-import pprint
-
+import oauth2 as oauth
+import urllib
 API_DOMAIN = 'api.semantics3.com'
 API_BASE = 'https://'+API_DOMAIN+'/v1/'
 
 class Semantics3Request:
 	def __init__(self, api_key=None, api_secret=None, endpoint=None):
-		self.api_key = api_key
-		self.api_secret = api_secret
-		self.consumer = oauth.OAuthConsumer(api_key,api_secret)
-		self.access_token = oauth.OAuthToken('', '')
 		self.endpoint     = endpoint
+		self.api_key      = api_key
+		self.api_secret   = api_secret
+		self.consumer     = oauth.Consumer(api_key,api_secret)
+		self.access_token = oauth.Token('', '')
+		self.client       = oauth.Client(self.consumer,self.access_token)
+
 		self.data_query   = {}
 		self.query_result = None
 
 	def fetch(self,endpoint,params):
-		api_endpoint = API_BASE + endpoint
-
-		oauth_request = oauth.OAuthRequest.from_consumer_and_token(
-				self.consumer,
-				token       = self.access_token,
-				http_method = 'GET',
-				http_url    = api_endpoint,
-				parameters  = {'q': params}
-			)
-		oauth_request.sign_request(
-				oauth.OAuthSignatureMethod_HMAC_SHA1(),
-				self.consumer,
-				self.access_token
-			)
-		connection = httplib.HTTPSConnection(API_DOMAIN)
-
-		api_request_url = oauth_request.to_url()
-		connection.request(oauth_request.http_method, api_request_url)
-		response = connection.getresponse()
-
-		return response.read()
-		#print "Request status: %s" % response.status
-		#print "Request response: %s" % response.read()
+		api_endpoint = API_BASE + endpoint + '?' + urllib.urlencode({'q':params})	
+		resp, content = self.client.request( api_endpoint, 'GET' )
+		print resp
+		print content
+		return content 
 
 	def remove(self, endpoint, *fields):
 		def _remove(path, hash):
@@ -71,7 +53,7 @@ class Semantics3Request:
 					yield i
 				offset = offset + len(self.query_result['results'])
 				self.add(self.endpoint, 'offset', offset)
-				self.run_query()
+				if( offset < total_count ): self.run_query()
 
 	def query(self, endpoint, **kwargs):
 		return json.loads(self.fetch(endpoint,json.dumps(kwargs)))

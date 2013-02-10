@@ -7,8 +7,10 @@ Quickstart guide: https://www.semantics3.com/quickstart
 API documentation can be found at https://www.semantics3.com/docs/
 
 ## Requirements
-
-* python 2.7
+* httplib2
+* oauth2
+* urllib
+* json
 
 ## Getting Started
 
