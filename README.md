@@ -60,14 +60,10 @@ In this example we are going to be accessing the categories endpoint. We are goi
 
 ```python
 # Build the query
-categories = Categories(
-	api_key = "SEM3xxxxxxxxxxxxxxxxxxxxxx",
-	api_secret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-)
-categories.categories_field( "cat_id", 4992 );
+products.categories_field( "cat_id", 4992 );
 
 # Execute the query
-results = categories.get_categories();
+results = products.get_categories();
 
 # View the results of the query
 print results
@@ -76,7 +72,8 @@ print results
 ### Nested Search Query
 
 You can intuitively construct all your complex queries but just repeatedly using the products_field() or add() methods.
-Here is how we translate the following JSON query - 
+Here is how we translate the following JSON query:
+
 ```javascript
 {
 	"cat_id" : 4992, 
@@ -136,21 +133,17 @@ Our library will automatically request for results 5 products at a time.
 For this example, we are going to look at a particular product that is sold by select mercgants and whose price is >= USD 30 and seen after a specific date (specified as a UNIX timestamp).
 
 ```python
-offers = Offers(
-	api_key = "SEM3xxxxxxxxxxxxxxxxxxxxxx",
-	api_secret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-)
-
 # Build the query
-offers.offers_field( "sem3_id", "4znupRCkN6w2Q4Ke4s6sUC");
-offers.offers_field( "seller", ["ATRQ56T3H9TM5","LFleurs","Frys","Walmart"] );
-offers.offers_field( "currency", "USD");
-offers.offers_field( "price", "gte", 30);
-offers.offers_field( "lastrecorded_at", "gte", 1348654600);
+products.offers_field( "sem3_id", "4znupRCkN6w2Q4Ke4s6sUC");
+products.offers_field( "seller", ["ATRQ56T3H9TM5","LFleurs","Frys","Walmart"] );
+products.offers_field( "currency", "USD");
+products.offers_field( "price", "gte", 30);
+products.offers_field( "lastrecorded_at", "gte", 1348654600);
+
 
 
 # Make the query
-results = offers.get_offers()
+results = products.get_offers()
 
 # View the results of the query
 print results

@@ -6,9 +6,17 @@ class Products(Semantics3Request):
 
 	def get_products(self):
 		return self.get()
+	def get_offers(self):
+		return self.get('offers')
+	def get_categories(self):
+		return self.get('categories')
 	
 	def products_field(self, *field):
 		return self.field(*field)
+	def offers_field(self, *field):
+		return self.add('offers',*field)
+	def categories_field(self, *field):
+		return self.add('categories',*field)
 
 	def sitedetails(self, field_name, field_value1, *field_value2):
 		self.field(
@@ -17,7 +25,6 @@ class Products(Semantics3Request):
 				field_value1,
 				*field_value2
 			)
-
 	def latestoffers(self, field_name, field_value1, field_value2):
 		self.field(
 				"sitedetails",

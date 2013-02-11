@@ -19,8 +19,6 @@ class Semantics3Request:
 	def fetch(self,endpoint,params):
 		api_endpoint = API_BASE + endpoint + '?' + urllib.urlencode({'q':params})	
 		resp, content = self.client.request( api_endpoint, 'GET' )
-		print resp
-		print content
 		return content 
 
 	def remove(self, endpoint, *fields):
@@ -40,6 +38,9 @@ class Semantics3Request:
 			parent = parent.setdefault(i, {}) 
 		parent[fields[-2]] = fields[-1]
 	
+	def field(self, *fields):
+		self.add(self.endpoint, *fields)
+
 	def cache(self, cache_size):
 		self.cache_size = cache_size 
 	def iter(self):
@@ -58,21 +59,17 @@ class Semantics3Request:
 	def query(self, endpoint, **kwargs):
 		return json.loads(self.fetch(endpoint,json.dumps(kwargs)))
 
-	def run_query(self):
-		query = self.data_query[self.endpoint]
+	def run_query(self, endpoint = None):
+		endpoint = endpoint or self.endpoint
+		query = self.data_query[endpoint]
 		self.query_result = self.query(
-			self.endpoint,
+			endpoint,
 			**query
 		)
-
-	def field(self, *fields):
-		self.add(self.endpoint, *fields)
-
-	def get(self):
-		self.run_query()
+	def get(self, endpoint = None):
+		self.run_query(endpoint)
 		return self.query_result
 
 	def clear_query(self):
 		self.data_query = {}
 		self.query_result = {}
-

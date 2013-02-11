@@ -22,7 +22,7 @@ setup(
 		keywords = "api ecommerce products",
 		url = "https://github.com/Semantics3/semantics3-python",
 		packages=['semantics3'],
-		long_description=read('README.md'),
+		long_description=read('README.rst'),
 		install_requires = install_requires,
 		classifiers = [
 			"Development Status :: 3 - Alpha",
