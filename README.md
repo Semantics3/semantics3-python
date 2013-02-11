@@ -89,7 +89,8 @@ Here is how we translate the following JSON query -
 			"price"   : { "gte" : 100 } 
 		}
 	}
-}```.
+}
+```
 
 
 This query returns all Toshiba products within a certain weight range narrowed down to just those that retailed recently on amazon.com for >= USD 100.
