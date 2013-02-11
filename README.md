@@ -99,8 +99,8 @@ print results
 
 ### Pagination
 
-The Semantics3 API allows for pagination, so you can request for say, 10 results,
-and then continue to obtain the next 10 from where you stopped previously. For the
+The Semantics3 API allows for pagination, so you can request for, say, 5 results,
+and then continue to obtain the next 5 from where you stopped previously. For the
 python semantics3 module, we have implemented this using iterators.
 All you have to do is specify a cache size, and use it the same way you would
 any iterator:
@@ -121,8 +121,8 @@ For this example, we are going to look at a particular product that is sold by s
 
 ```python
 offers = Offers(
-    api_key = api_key,
-    api_secret = api_secret
+	api_key = "SEM3xxxxxxxxxxxxxxxxxxxxxx",
+	api_secret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 )
 
 # Build the query
