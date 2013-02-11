@@ -36,7 +36,7 @@ products = Products(
 
 Let's make our first query! For this query, we are going to search for all Toshiba products that fall under the category of "Computers and Accessories", whose cat_id is 4992. 
 
-```perl
+```python
 # Build the query
 products.products_field( "cat_id", 4992 )
 products.products_field( "brand", "Toshiba" )
@@ -75,7 +75,9 @@ print results
 
 ### Nested Search Query
 
-You can intuitively construct all your complex queries but just repeatedly using the products_field() or add() methods. Here is how we translate the following JSON query - '{"cat_id":4992,"brand":"Toshiba","weight":{"gte":1000000,"lt":1500000},"sitedetails":{"name":"amazon.com","latestoffers":{"currency":"USD","price":{"gte":100}}}}'.
+You can intuitively construct all your complex queries but just repeatedly using the products_field() or add() methods.
+Here is how we translate the following JSON query - 
+``{"cat_id":4992,"brand":"Toshiba","weight":{"gte":1000000,"lt":1500000},"sitedetails":{"name":"amazon.com","latestoffers":{"currency":"USD","price":{"gte":100}}}}``.
 
 This query returns all Toshiba products within a certain weight range narrowed down to just those that retailed recently on amazon.com for >= USD 100.
 
