@@ -13,7 +13,7 @@ install_requires = [
 def read(fname):
 	return open(os.path.join(os.path.dirname(__file__), fname)).read()
 setup(
-		name = "semantics3",
+		name = "semantics3-products",
 		version = "0.0.1",
 		author = "Shawn Tan",
 		author_email = "shawn@semantics3.com",
