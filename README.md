@@ -94,13 +94,55 @@ products.remove( "products", "weight" );
 
 # Make the query
 results = products.get_products();
+print results
+```
+
+### Pagination
+
+The Semantics3 API allows for pagination, so you can request for say, 10 results,
+and then continue to obtain the next 10 from where you stopped previously. For the
+python semantics3 module, we have implemented this using iterators.
+All you have to do is specify a cache size, and use it the same way you would
+any iterator:
+
+```python
+# Specify a cache size
+products.cache(5)
+
+# Iterate through the results
+for i in products.iter():
+	print i
+```
+Our library will automatically request for results 5 products at a time.
+
+
+### Explore Price Histories
+For this example, we are going to look at a particular product that is sold by select mercgants and whose price is >= USD 30 and seen after a specific date (specified as a UNIX timestamp).
+
+```python
+offers = Offers(
+    api_key = api_key,
+    api_secret = api_secret
+)
+
+# Build the query
+offers.offers_field( "sem3_id", "4znupRCkN6w2Q4Ke4s6sUC");
+offers.offers_field( "seller", ["ATRQ56T3H9TM5","LFleurs","Frys","Walmart"] );
+offers.offers_field( "currency", "USD");
+offers.offers_field( "price", "gte", 30);
+offers.offers_field( "lastrecorded_at", "gte", 1348654600);
+
+
+# Make the query
+results = offers.get_offers()
 
 # View the results of the query
 print results
 ```
 
-## Contributing
 
+
+## Contributing
 Use GitHub's standard fork/commit/pull-request cycle.  If you have any questions, email <support@semantics3.com>.
 
 ## Author
