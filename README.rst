@@ -7,15 +7,12 @@ histories, for a large number of products. See
 https://www.semantics3.com for more information.
 
 Quickstart guide: https://www.semantics3.com/quickstart API
-documentation can be found at https://www.semantics3.com/docs/
-
-Requirements
-------------
-
--  httplib2
--  oauth2
--  urllib
--  json
+documentation can be found at https://www.semantics3.com/docs/ ##
+Installation semantics3-products can be installed through pypi:
+``bash pip install semantics3-products`` To install the latest source
+from the repository
+``git clone https://github.com/Semantics3/semantics3-python.git python setup.py install``
+## Requirements \* httplib2 \* oauth2 \* urllib \* json
 
 Getting Started
 ---------------
