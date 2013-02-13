@@ -171,7 +171,7 @@ Explore Price Histories
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 For this example, we are going to look at a particular product that is
-sold by select mercants and has a price of >= USD 30 and seen after a
+sold by select merchants and has a price of >= USD 30 and seen after a
 specific date (specified as a UNIX timestamp).
 
 ::
