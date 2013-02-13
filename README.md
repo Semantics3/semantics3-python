@@ -16,6 +16,7 @@ To install the latest source from the repository
 
 ```bash
 git clone https://github.com/Semantics3/semantics3-python.git
+cd semantics3-python
 python setup.py install
 ```
 
