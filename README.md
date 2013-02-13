@@ -21,10 +21,7 @@ python setup.py install
 ```
 
 ## Requirements
-* httplib2
 * oauth2
-* urllib
-* json
 
 ## Getting Started
 
