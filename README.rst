@@ -12,11 +12,11 @@ documentation can be found at https://www.semantics3.com/docs/
 Installation
 ------------
 
-semantics3-products can be installed through pypi:
+semantics3 can be installed through pypi:
 
 ::
 
-    pip install semantics3-products
+    pip install semantics3
 
 To install the latest source from the repository
 
