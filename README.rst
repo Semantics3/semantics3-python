@@ -117,7 +117,7 @@ translate the following JSON query:
         "brand"  : "Toshiba",
         "weight" : { "gte":1000000, "lt":1500000 },
         "sitedetails" : {
-            "name" : "amazon.com",
+            "name" : "newegg.com",
             "latestoffers" : {
                 "currency": "USD",
                 "price"   : { "gte" : 100 } 
@@ -126,7 +126,7 @@ translate the following JSON query:
     }
 
 This query returns all Toshiba products within a certain weight range
-narrowed down to just those that retailed recently on amazon.com for >=
+narrowed down to just those that retailed recently on newegg.com for >=
 USD 100.
 
 ::
@@ -137,7 +137,7 @@ USD 100.
     products.products_field( "brand", "Toshiba" )
     products.products_field( "weight", "gte", 1000000 )
     products.products_field( "weight", "lt", 1500000 )
-    products.products_field( "sitedetails", "name", "amazon.com" )
+    products.products_field( "sitedetails", "name", "newegg.com" )
     products.products_field( "sitedetails", "latestoffers", "currency", "USD" )
     products.products_field( "sitedetails", "latestoffers", "price", "gte", 100 )
     # Let's make a modification - say we no longer want the weight attribute
