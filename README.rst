@@ -12,26 +12,24 @@ documentation can be found at https://www.semantics3.com/docs/
 Installation
 ------------
 
-semantics3-products can be installed through pypi:
+semantics3 can be installed through pypi:
 
 ::
 
-    pip install semantics3-products
+    pip install semantics3
 
 To install the latest source from the repository
 
 ::
 
     git clone https://github.com/Semantics3/semantics3-python.git
+    cd semantics3-python
     python setup.py install
 
 Requirements
 ------------
 
--  httplib2
 -  oauth2
--  urllib
--  json
 
 Getting Started
 ---------------
@@ -173,14 +171,14 @@ Explore Price Histories
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 For this example, we are going to look at a particular product that is
-sold by select mercgants and whose price is >= USD 30 and seen after a
+sold by select merchants and has a price of >= USD 30 and seen after a
 specific date (specified as a UNIX timestamp).
 
 ::
 
     # Build the query
     products.offers_field( "sem3_id", "4znupRCkN6w2Q4Ke4s6sUC");
-    products.offers_field( "seller", ["ATRQ56T3H9TM5","LFleurs","Frys","Walmart"] );
+    products.offers_field( "seller", ["LFleurs","Frys","Walmart"] );
     products.offers_field( "currency", "USD");
     products.offers_field( "price", "gte", 30);
     products.offers_field( "lastrecorded_at", "gte", 1348654600);
