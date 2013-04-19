@@ -1,36 +1,41 @@
 from semantics3 import Semantics3Request
 
+
 class Products(Semantics3Request):
-	def __init__(self, api_key, api_secret):
-		Semantics3Request.__init__(self, api_key, api_secret, 'products')
+    def __init__(self, api_key, api_secret):
+        Semantics3Request.__init__(self, api_key, api_secret, 'products')
 
-	def get_products(self):
-		return self.get()
-	def get_offers(self):
-		return self.get('offers')
-	def get_categories(self):
-		return self.get('categories')
-	
-	def products_field(self, *field):
-		return self.field(*field)
-	def offers_field(self, *field):
-		return self.add('offers',*field)
-	def categories_field(self, *field):
-		return self.add('categories',*field)
+    def get_products(self):
+        return self.get()
 
-	def sitedetails(self, field_name, field_value1, *field_value2):
-		self.field(
-				"sitedetails", 
-				field_name,
-				field_value1,
-				*field_value2
-			)
-	def latestoffers(self, field_name, field_value1, field_value2):
-		self.field(
-				"sitedetails",
-				"latestoffers",
-				field_name,
-				field_value1,
-				*field_value2
-			)
+    def get_offers(self):
+        return self.get('offers')
 
+    def get_categories(self):
+        return self.get('categories')
+
+    def products_field(self, *field):
+        return self.field(*field)
+
+    def offers_field(self, *field):
+        return self.add('offers', *field)
+
+    def categories_field(self, *field):
+        return self.add('categories', *field)
+
+    def sitedetails(self, field_name, field_value1, *field_value2):
+        self.field(
+            "sitedetails",
+            field_name,
+            field_value1,
+            *field_value2
+        )
+
+    def latestoffers(self, field_name, field_value1, field_value2):
+        self.field(
+            "sitedetails",
+            "latestoffers",
+            field_name,
+            field_value1,
+            *field_value2
+        )
