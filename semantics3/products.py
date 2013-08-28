@@ -33,4 +33,3 @@ class Products(Semantics3Request):
 				field_value1,
 				*field_value2
 			)
-

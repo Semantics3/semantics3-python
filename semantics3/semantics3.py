@@ -30,6 +30,7 @@ class Semantics3Request:
 
 	def fetch(self,endpoint,params):
 		api_endpoint = API_BASE + endpoint + '?' + urllib.urlencode({'q':params})	
+		print api_endpoint
 		resp, content = self.client.request( api_endpoint, 'GET' )
 		return content
 
