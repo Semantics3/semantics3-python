@@ -14,13 +14,13 @@ Installation
 
 semantics3 can be installed through pypi:
 
-::
+.. code:: bash
 
     pip install semantics3
 
 To install the latest source from the repository
 
-::
+.. code:: bash
 
     git clone https://github.com/Semantics3/semantics3-python.git
     cd semantics3-python
@@ -45,7 +45,7 @@ Setup Work
 
 Let's lay the groundwork.
 
-::
+.. code:: python
 
     from semantics3 import Products
 
@@ -62,7 +62,7 @@ Let's make our first query! For this query, we are going to search for
 all Toshiba products that fall under the category of "Computers and
 Accessories", whose cat\_id is 4992.
 
-::
+.. code:: python
 
     # Build the query
     products.products_field( "cat_id", 4992 )
@@ -92,7 +92,7 @@ category, which has a cat\_id of 4992. For more details regarding our
 category tree and associated cat\_ids check out our API docs at
 https://www.semantics3.com/docs
 
-::
+.. code:: python
 
     # Build the query
     products.categories_field( "cat_id", 4992 );
@@ -110,14 +110,14 @@ You can intuitively construct all your complex queries but just
 repeatedly using the products\_field() or add() methods. Here is how we
 translate the following JSON query:
 
-::
+.. code:: javascript
 
     {
         "cat_id" : 4992, 
         "brand"  : "Toshiba",
         "weight" : { "gte":1000000, "lt":1500000 },
         "sitedetails" : {
-            "name" : "amazon.com",
+            "name" : "newegg.com",
             "latestoffers" : {
                 "currency": "USD",
                 "price"   : { "gte" : 100 } 
@@ -126,10 +126,10 @@ translate the following JSON query:
     }
 
 This query returns all Toshiba products within a certain weight range
-narrowed down to just those that retailed recently on amazon.com for >=
+narrowed down to just those that retailed recently on newegg.com for >=
 USD 100.
 
-::
+.. code:: python
 
     # Build the query
     products = Products( api_key, api_secret )
@@ -137,7 +137,7 @@ USD 100.
     products.products_field( "brand", "Toshiba" )
     products.products_field( "weight", "gte", 1000000 )
     products.products_field( "weight", "lt", 1500000 )
-    products.products_field( "sitedetails", "name", "amazon.com" )
+    products.products_field( "sitedetails", "name", "newegg.com" )
     products.products_field( "sitedetails", "latestoffers", "currency", "USD" )
     products.products_field( "sitedetails", "latestoffers", "price", "gte", 100 )
     # Let's make a modification - say we no longer want the weight attribute
@@ -156,7 +156,7 @@ previously. For the python semantics3 module, we have implemented this
 using iterators. All you have to do is specify a cache size, and use it
 the same way you would any iterator:
 
-::
+.. code:: python
 
     # Specify a cache size
     products.cache(5)
@@ -174,7 +174,7 @@ For this example, we are going to look at a particular product that is
 sold by select merchants and has a price of >= USD 30 and seen after a
 specific date (specified as a UNIX timestamp).
 
-::
+.. code:: python
 
     # Build the query
     products.offers_field( "sem3_id", "4znupRCkN6w2Q4Ke4s6sUC");
