@@ -29,7 +29,7 @@ To install the latest source from the repository
 Requirements
 ------------
 
--  oauth2
+-  requests-oauthlib
 
 Getting Started
 ---------------

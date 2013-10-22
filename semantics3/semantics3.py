@@ -1,13 +1,23 @@
 import json
-import oauth2 as oauth
-import urllib
-from error import Semantics3Error
+from requests_oauthlib import OAuth1Session
+
+try:
+    import urllib.parse as urllib
+except ImportError:
+    import urllib
+
+try:
+    from .error import Semantics3Error
+except ImportError:
+    from error import Semantics3Error
+
 
 API_DOMAIN = 'api.semantics3.com'
 API_BASE = 'https://' + API_DOMAIN + '/v1/'
 
 
 class Semantics3Request:
+
     def __init__(self, api_key=None, api_secret=None, endpoint=None):
         if api_key is None:
             raise Semantics3Error(
@@ -24,17 +34,15 @@ class Semantics3Request:
         self.api_key = api_key
         self.api_secret = api_secret
         self.endpoint = endpoint
-        self.consumer = oauth.Consumer(api_key, api_secret)
-        self.access_token = oauth.Token('', '')
-        self.client = oauth.Client(self.consumer, self.access_token)
+        self.oauth = OAuth1Session(api_key, client_secret=api_secret)
         self.data_query = {}
         self.query_result = None
         self.cache_size = 10
 
     def fetch(self, endpoint, params):
         api_endpoint = API_BASE + endpoint + '?' +\
-                                            urllib.urlencode({'q': params})
-        resp, content = self.client.request(api_endpoint, 'GET')
+            urllib.urlencode({'q': params})
+        content = self.oauth.get(api_endpoint)
         return content
 
     def remove(self, endpoint, *fields):
@@ -96,7 +104,8 @@ class Semantics3Request:
                     self.run_query()
 
     def query(self, endpoint, **kwargs):
-        return json.loads(self.fetch(endpoint, json.dumps(kwargs)))
+        content = self.fetch(endpoint, json.dumps(kwargs)).content.decode('utf-8')
+        return json.loads(content)
 
     def run_query(self, endpoint=None):
         endpoint = endpoint or self.endpoint
@@ -108,9 +117,10 @@ class Semantics3Request:
             endpoint,
             **query
         )
+
         if self.query_result['code'] != 'OK':
             raise Semantics3Error(self.query_result['code'],
-                                                self.query_result['message'])
+                                  self.query_result['message'])
 
     def get(self, endpoint=None):
         self.run_query(endpoint)

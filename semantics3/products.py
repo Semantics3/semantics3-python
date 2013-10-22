@@ -1,4 +1,7 @@
-from semantics3 import Semantics3Request
+try:
+    from .semantics3 import Semantics3Request
+except ImportError:
+    from semantics3 import Semantics3Request
 
 
 class Products(Semantics3Request):
