@@ -21,7 +21,7 @@ python setup.py install
 ```
 
 ## Requirements
-* oauth2
+* requests-oauthlib
 
 ## Getting Started
 

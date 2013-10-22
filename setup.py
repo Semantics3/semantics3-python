@@ -6,7 +6,7 @@ except ImportError:
     from distutils.core import setup
 
 install_requires = [
-    'oauth2 >= 1.5.211',
+    'requests-oauthlib >= 0.4.0'
 ]
 
 
@@ -14,7 +14,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 setup(
     name="semantics3",
-    version="0.0.1",
+    version="0.0.2",
     author="Shawn Tan",
     author_email="shawn@semantics3.com",
     description=("Semantics3 Products API"),
