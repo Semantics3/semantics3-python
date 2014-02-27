@@ -14,6 +14,8 @@ def read(fname):
       description = pypandoc.convert(fname, 'rst')
    except (IOError, ImportError):
       description = ''
+   print(description)
+   with open('README.rst','w') as f: f.write(description)
    return description
 
 setup(
