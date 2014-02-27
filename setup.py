@@ -8,10 +8,14 @@ except ImportError:
 install_requires = [
     'requests-oauthlib >= 0.4.0'
 ]
-
-
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+   try:
+      import pypandoc
+      description = pypandoc.convert(fname, 'rst')
+   except (IOError, ImportError):
+      description = ''
+   return description
+
 setup(
     name="semantics3",
     version="0.2",
@@ -22,7 +26,7 @@ setup(
     keywords="api ecommerce products",
     url="https://github.com/Semantics3/semantics3-python",
     packages=['semantics3'],
-    long_description=read('README.rst'),
+    long_description=read('README.md'),
     install_requires=install_requires,
     classifiers=[
         "Topic :: Utilities",
