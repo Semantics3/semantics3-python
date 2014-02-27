@@ -42,7 +42,7 @@ class Semantics3Request:
     def fetch(self, endpoint, params):
         api_endpoint = API_BASE + endpoint + '?' +\
             urllib.urlencode({'q': params})
-        content = self.oauth.get(api_endpoint)
+        content = self.oauth.get(api_endpoint,headers={'User-Agent':'Semantics3 Python Lib/0.2'})
         return content
 
     def remove(self, endpoint, *fields):

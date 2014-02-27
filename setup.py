@@ -14,7 +14,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 setup(
     name="semantics3",
-    version="0.0.2",
+    version="0.2",
     author="Shawn Tan",
     author_email="shawn@semantics3.com",
     description=("Semantics3 Products API"),
@@ -25,7 +25,6 @@ setup(
     long_description=read('README.rst'),
     install_requires=install_requires,
     classifiers=[
-        "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
         "License :: OSI Approved :: MIT License",
     ]
