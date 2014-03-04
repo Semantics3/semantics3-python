@@ -70,8 +70,7 @@ class Semantics3Request:
             else:
                 raise Semantics3Error(
                     'Invalid constraint',
-                    'Cannot add this constraint, \'' + parent + '\' is already\
-                                                                    a value.'
+                    'Cannot add this constraint, \'' + parent + '\' is already a value.'
                 )
 
         if isinstance(parent, dict):
@@ -79,8 +78,7 @@ class Semantics3Request:
         else:
             raise Semantics3Error(
                 'Invalid constraint',
-                'Cannot add this constraint, \'' + parent + '\' is already\
-                                                                a value.'
+                'Cannot add this constraint, \'' + parent + '\' is already a value.'
             )
 
     def field(self, *fields):
