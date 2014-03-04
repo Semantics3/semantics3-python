@@ -39,10 +39,15 @@ class Semantics3Request:
         self.query_result = None
         self.cache_size = 10
 
-    def fetch(self, endpoint, params):
+    def fetch(self, method, endpoint, params):
         api_endpoint = API_BASE + endpoint + '?' +\
             urllib.urlencode({'q': params})
-        content = self.oauth.get(api_endpoint,headers={'User-Agent':'Semantics3 Python Lib/0.2'})
+        content = self.oauth.request(
+                    method,
+                    api_endpoint,
+                    headers={'User-Agent':'Semantics3 Python Lib/0.2'}
+                  )
+        print(content)
         return content
 
     def remove(self, endpoint, *fields):
@@ -101,17 +106,18 @@ class Semantics3Request:
                 if(offset < total_count):
                     self.run_query()
 
-    def query(self, endpoint, **kwargs):
-        content = self.fetch(endpoint, json.dumps(kwargs)).content.decode('utf-8')
+    def query(self, method, endpoint, **kwargs):
+        content = self.fetch(method, endpoint, json.dumps(kwargs)).content.decode('utf-8')
         return json.loads(content)
 
-    def run_query(self, endpoint=None):
+    def run_query(self, endpoint=None, method='GET'):
         endpoint = endpoint or self.endpoint
         if not endpoint in self.data_query:
-            raise Semantics3Error("No query built", "You need to first create\
-                                            a query using the add() method.")
+            raise Semantics3Error("No query built",
+                      "You need to first createa query using the add() method.")
         query = self.data_query[endpoint]
         self.query_result = self.query(
+            method,
             endpoint,
             **query
         )
