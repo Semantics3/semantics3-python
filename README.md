@@ -2,17 +2,16 @@
 semantics3 is a python client for accessing the Semantics3 Products API, which provides structured information, including pricing histories, for a large number of products.
 See https://www.semantics3.com for more information.
 
-Quickstart guide: https://www.semantics3.com/quickstart
 API documentation can be found at https://www.semantics3.com/docs/
 
 ## Installation
-semantics3 can be installed through pypi:
+semantics3 can be installed through pip:
 
 ```bash
 pip install semantics3
 ```
 
-To install the latest source from the repository
+To install the latest source:
 
 ```bash
 git clone https://github.com/Semantics3/semantics3-python.git
@@ -37,141 +36,122 @@ Let's lay the groundwork.
 from semantics3 import Products
 
 # Set up a client to talk to the Semantics3 API using your Semantics3 API Credentials
-products = Products(
+sem3 = Products(
 	api_key = "SEM3xxxxxxxxxxxxxxxxxxxxxx",
 	api_secret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 )
 ```
 
-### First Query aka 'Hello World':
+### First Request aka 'Hello World':
 
-Let's make our first query! For this query, we are going to search for all Toshiba products that fall under the category of "Computers and Accessories", whose cat_id is 4992. 
+Let's run our first request! We are going to run a simple search for the word "iPhone" as follows:
+
 
 ```python
-# Build the query
-products.products_field( "cat_id", 4992 )
-products.products_field( "brand", "Toshiba" )
+# Build the request
+sem3.products_field("search", "iphone")
 
-# Make the query
-results = products.get_products();
+# Run the request
+results = sem3.get_products()
 #or
-results = products.get()
+results = sem3.get()
 
-# View the results of the query
+# View the results of the request
 print results
 ```
 
-## Examples
+## Sample Requests
 
-The following examples show you how to interface with some of the core functionality of the Semantics3 Products API. For more detailed examples check out the Quickstart guide: https://www.semantics3.com/quickstart
-
-### Explore the Category Tree
-
-In this example we are going to be accessing the categories endpoint. We are going to be specifically exploiring the "Computers and Accessories" category, which has a cat_id of 4992. For more details regarding our category tree and associated cat_ids check out our API docs at https://www.semantics3.com/docs
-
-```python
-# Build the query
-products.categories_field( "cat_id", 4992 );
-
-# Execute the query
-results = products.get_categories();
-
-# View the results of the query
-print results
-```
-
-### Nested Search Query
-
-You can intuitively construct all your complex queries but just repeatedly using the products_field() or add() methods.
-Here is how we translate the following JSON query:
-
-```javascript
-{
-	"cat_id" : 4992, 
-	"brand"  : "Toshiba",
-	"weight" : { "gte":1000000, "lt":1500000 },
-	"sitedetails" : {
-		"name" : "newegg.com",
-		"latestoffers" : {
-			"currency": "USD",
-			"price"   : { "gte" : 100 } 
-		}
-	}
-}
-```
-
-
-This query returns all Toshiba products within a certain weight range narrowed down to just those that retailed recently on newegg.com for >= USD 100.
-
-```python
-# Build the query
-products = Products( api_key, api_secret )
-products.products_field( "cat_id", 4992 )
-products.products_field( "brand", "Toshiba" )
-products.products_field( "weight", "gte", 1000000 )
-products.products_field( "weight", "lt", 1500000 )
-products.products_field( "sitedetails", "name", "newegg.com" )
-products.products_field( "sitedetails", "latestoffers", "currency", "USD" )
-products.products_field( "sitedetails", "latestoffers", "price", "gte", 100 )
-# Let's make a modification - say we no longer want the weight attribute
-products.remove( "products", "weight" );
-
-# Make the query
-results = products.get_products();
-print results
-```
+The following examples show you how to interface with some of the core functionality of the Semantics3 Products API.
 
 ### Pagination
 
-The Semantics3 API allows for pagination, so you can request for, say, 5 results,
-and then continue to obtain the next 5 from where you stopped previously. For the
-python semantics3 module, we have implemented this using iterators.
-All you have to do is specify a cache size, and use it the same way you would
-any iterator:
+The example in our "Hello World" script returns the first 10 results. In this example, we'll scroll to subsequent pages, beyond our initial request:
 
 ```python
+# Build the request
+sem3.products_field("search", "iphone")
+
+# Run the request
+results = sem3.get_products()
+
 # Specify a cache size
-products.cache(5)
+sem3.cache(5)
 
 # Iterate through the results
-for i in products.iter():
-	print i
+page_no = 0
+for i in sem3.iter():
+    page_no += 1
+	print "We are at page = %s" % page_no
+    print "The results for this page are:"
+    print i
+    
 ```
-Our library will automatically request for results 5 products at a time.
 
+### UPC Query
 
-### Explore Price Histories
-For this example, we are going to look at a particular product that is sold by select merchants and has a price of >= USD 30 and seen after a specific date (specified as a UNIX timestamp).
+Running a UPC/EAN/GTIN query is as simple as running a search query:
 
 ```python
-# Build the query
-products.offers_field( "sem3_id", "4znupRCkN6w2Q4Ke4s6sUC");
-products.offers_field( "seller", ["LFleurs","Frys","Walmart"] );
-products.offers_field( "currency", "USD");
-products.offers_field( "price", "gte", 30);
-products.offers_field( "lastrecorded_at", "gte", 1348654600);
+# Build the request
+sem3.products_field("upc", "883974958450")
+sem3.products_field("field", ["name","gtins"])
 
+# Run the request
+results = sem3.get_products()
 
+# View the results of the request
+print results 
+```
 
-# Make the query
-results = products.get_offers()
+### URL Query
 
-# View the results of the query
+Get the picture? You can run URL queries as follows:
+
+```python
+sem3.products_field("url", "http://www.walmart.com/ip/15833173")
+results = sem3.get_products()
 print results
 ```
 
+### Price Filter
 
+Filter by price using the "lt" (less than) tag:
+
+```python
+sem3.products_field("search", "iphone")
+sem3.products_field("price", "lt", 300)
+results = sem3.get_products()
+print results
+```
+
+### Category ID Query
+
+To lookup details about a cat_id, run your request against the categories resource:
+
+```python
+# Build the request
+sem3.categories_field("cat_id", 4992)
+
+# Run the request
+results = sem3.get_categories()
+
+# View the results of the request
+print results
+```
 
 ## Contributing
 Use GitHub's standard fork/commit/pull-request cycle.  If you have any questions, email <support@semantics3.com>.
 
-## Author
+## Authors
 
-* Shawn Tan <shawn@semantics3.com>
+* Shawn Tan
+
+* Abishek Bhat <abishek@semantics3.com>
 
 ## Copyright
 
-Copyright (c) 2013 Semantics3 Inc.
+Copyright (c) 2015 Semantics3 Inc.
 
 ## License
 
