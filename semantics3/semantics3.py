@@ -40,11 +40,11 @@ class Semantics3Request:
         self.cache_size = 10
 
     def fetch(self, method, endpoint, params):
-        api_endpoint = API_BASE + endpoint + '?' +\
-            urllib.urlencode({'q': params})
+        api_endpoint = API_BASE + endpoint
         content = self.oauth.request(
                     method,
                     api_endpoint,
+                    params = params,
                     headers={'User-Agent':'Semantics3 Python Lib/0.2'}
                   )
         print(content)
@@ -107,21 +107,31 @@ class Semantics3Request:
                     self.run_query()
 
     def query(self, method, endpoint, **kwargs):
-        content = self.fetch(method, endpoint, json.dumps(kwargs)).content.decode('utf-8')
+        if method == "GET":
+            params = { 'q' : json.dumps(kwargs) }
+        else:
+            params = kwargs
+        content = self.fetch(method, endpoint, params).content.decode('utf-8')
         return json.loads(content)
 
-    def run_query(self, endpoint=None, method='GET'):
+    def run_query(self, endpoint=None, method='GET', params=None):
         endpoint = endpoint or self.endpoint
-        if not endpoint in self.data_query:
-            raise Semantics3Error("No query built",
-                      "You need to first createa query using the add() method.")
-        query = self.data_query[endpoint]
-        self.query_result = self.query(
-            method,
-            endpoint,
-            **query
-        )
-
+        if method == "GET" and params == None:
+            if not endpoint in self.data_query:
+                raise Semantics3Error("No query built",
+                          "You need to first createa query using the add() method.")
+            query = self.data_query[endpoint]
+            self.query_result = self.query(
+                method,
+                endpoint,
+                **query
+            )
+        else:
+            self.query_result = self.query(
+                method,
+                endpoint,
+                **params
+            )
         if self.query_result['code'] != 'OK':
             raise Semantics3Error(self.query_result['code'],
                                   self.query_result['message'])
