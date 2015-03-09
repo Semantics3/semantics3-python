@@ -106,39 +106,44 @@ class Semantics3Request:
                 if(offset < total_count):
                     self.run_query()
 
-    def query(self, method, endpoint, **kwargs):
+    def query(self, method, endpoint, kwargs):
         if method == "GET":
             params = { 'q' : json.dumps(kwargs) }
         else:
             params = kwargs
-        content = self.fetch(method, endpoint, params).content.decode('utf-8')
-        return json.loads(content)
+        response = self.fetch(method, endpoint, params)
+        if response.status_code < 400:
+            return response.json()
+        else:
+            try:
+                if response.json().get('code') != 'OK':
+                    raise Semantics3Error(self.query_result['code'],
+                                          self.query_result['message'])
+            except:
+                raise Semantics3Error("400", "Bad Request")
 
     def run_query(self, endpoint=None, method='GET', params=None):
         endpoint = endpoint or self.endpoint
-        if method == "GET" and params == None:
-            if not endpoint in self.data_query:
-                raise Semantics3Error("No query built",
-                          "You need to first createa query using the add() method.")
-            query = self.data_query[endpoint]
+        if method == "GET":
+            try:
+                query = self.data_query[endpoint]
+            except KeyError:
+                query = params or {}
             self.query_result = self.query(
                 method,
                 endpoint,
-                **query
+                query
             )
         else:
             self.query_result = self.query(
                 method,
                 endpoint,
-                **params
+                params
             )
-        if self.query_result['code'] != 'OK':
-            raise Semantics3Error(self.query_result['code'],
-                                  self.query_result['message'])
-
-    def get(self, endpoint=None):
-        self.run_query(endpoint)
         return self.query_result
+    
+    def get(self, endpoint=None):
+        return self.run_query(endpoint)
 
     def clear_query(self):
         self.data_query = {}
