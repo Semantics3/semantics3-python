@@ -115,12 +115,10 @@ class Semantics3Request:
         if response.status_code < 400:
             return response.json()
         else:
-            try:
-                if response.json().get('code') != 'OK':
-                    raise Semantics3Error(self.query_result['code'],
-                                          self.query_result['message'])
-            except:
-                raise Semantics3Error("400", "Bad Request")
+            if response.json().get('code') != 'OK':
+                response_body = response.json()
+                raise Semantics3Error(response_body.get('code'),
+                                      response_body.get('message'))
 
     def run_query(self, endpoint=None, method='GET', params=None):
         endpoint = endpoint or self.endpoint
