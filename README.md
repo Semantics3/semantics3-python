@@ -190,7 +190,7 @@ params = {
 }
 
 webhook_id = '7JcGN81u'
-endpoint = "webhooks/" + webhook_id + "/events"
+endpoint = "webhooks/%s/events" % webhook_id
 
 eventObject = sem3.run_query(endpoint,  "POST", params)
 print eventObject["id"]
