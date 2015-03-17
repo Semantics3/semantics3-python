@@ -12,13 +12,9 @@ except ImportError:
     from error import Semantics3Error
 
 
-API_DOMAIN = 'api.semantics3.com'
-API_BASE = 'https://' + API_DOMAIN + '/v1/'
-
-
 class Semantics3Request:
 
-    def __init__(self, api_key=None, api_secret=None, endpoint=None):
+    def __init__(self, api_key=None, api_secret=None, endpoint=None, api_base='https://api.semantics3.com/v1/'):
         if api_key is None:
             raise Semantics3Error(
                 'API Credentials Missing',
@@ -38,9 +34,10 @@ class Semantics3Request:
         self.data_query = {}
         self.query_result = None
         self.cache_size = 10
+        self.api_base = api_base
 
     def fetch(self, method, endpoint, params):
-        api_endpoint = API_BASE + endpoint
+        api_endpoint = self.api_base + endpoint
         content = self.oauth.request(
                     method,
                     api_endpoint,
