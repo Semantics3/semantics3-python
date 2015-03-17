@@ -13,7 +13,7 @@ except ImportError:
 
 
 API_DOMAIN = 'api.semantics3.com'
-API_BASE = 'https://' + API_DOMAIN + '/test/v1/'
+API_BASE = 'https://' + API_DOMAIN + '/v1/'
 
 
 class Semantics3Request:
