@@ -140,6 +140,93 @@ results = sem3.get_categories()
 print results
 ```
 
+## Webhooks
+You can use webhooks to get near-real-time price updates from Semantics3.
+
+### Creating a webhook
+
+You can register a webhook with Semantics3 by sending a POST request to `"webhooks"` endpoint.
+To verify that your URL is active, a GET request will be sent to your server with a `verification_code` parameter. Your server should respond with `verification_code` in the response body to complete the verification process.
+
+```python
+params = {
+    webhook_uri : "http://mydomain.com/webhooks-callback-url"
+}
+
+webhook = sem3.run_query("webhooks", params, "POST")
+print webhook["id"]
+print webhook["webhook_uri"]
+```
+
+To fetch existing webhooks
+```python
+webhooks = sem3.run_query("webhooks", "GET")
+print webhooks
+```
+
+To remove a webhook
+```python
+webhook_id = '7JcGN81u'
+endpoint = "webhooks/%s" % webhook_id
+
+response = sem3.run_query( endpoint, "DELETE")
+print response
+```
+
+### Registering events
+Once you register a webhook, you can start adding events to it. Semantics3 server will send you notifications when these events occur.
+To register events for a specific webhook send a POST request to the `"webhooks/{webhook_id}/events"` endpoint
+
+```python
+params = {
+    "type": "price.change",
+    "product": {
+        "sem3_id": "1QZC8wchX62eCYS2CACmka"
+    },
+    "constraints": {
+        "gte": 10,
+        "lte": 100
+    }
+}
+
+webhook_id = '7JcGN81u'
+endpoint = "webhooks/%s/events" % webhook_id
+
+eventObject = sem3.run_query(endpoint,  "POST", params)
+print eventObject["id"]
+print eventObject["type"]
+print eventObject["product"]
+```
+
+To fetch all registered events for a give webhook
+```python
+webhook_id = '7JcGN81u'
+endpoint = "webhooks/%s/events" % webhook_id
+
+events = sem3.run_query(endpoint,  "GET")
+print events
+```
+
+### Webhook Notifications
+Once you have created a webhook and registered events on it, notifications will be sent to your registered webhook URI via a POST request when the corresponding events occur. Make sure that your server can accept POST requests. Here is how a sample notification object looks like
+```javascript
+{
+    "type": "price.change",
+    "event_id": "XyZgOZ5q",
+    "notification_id": "X4jsdDsW",
+    "changes": [{
+        "site": "abc.com",
+        "url": "http://www.abc.com/def",
+        "previous_price": 45.50,
+        "current_price": 41.00
+    }, {
+        "site": "walmart.com",
+        "url": "http://www.walmart.com/ip/20671263",
+        "previous_price": 34.00,
+        "current_price": 42.00
+    }]
+}
+```
 ## Contributing
 Use GitHub's standard fork/commit/pull-request cycle.  If you have any questions, email <support@semantics3.com>.
 

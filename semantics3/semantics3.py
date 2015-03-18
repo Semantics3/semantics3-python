@@ -12,13 +12,9 @@ except ImportError:
     from error import Semantics3Error
 
 
-API_DOMAIN = 'api.semantics3.com'
-API_BASE = 'https://' + API_DOMAIN + '/v1/'
-
-
 class Semantics3Request:
 
-    def __init__(self, api_key=None, api_secret=None, endpoint=None):
+    def __init__(self, api_key=None, api_secret=None, endpoint=None, api_base='https://api.semantics3.com/v1/'):
         if api_key is None:
             raise Semantics3Error(
                 'API Credentials Missing',
@@ -38,13 +34,14 @@ class Semantics3Request:
         self.data_query = {}
         self.query_result = None
         self.cache_size = 10
+        self.api_base = api_base
 
     def fetch(self, method, endpoint, params):
-        api_endpoint = API_BASE + endpoint + '?' +\
-            urllib.urlencode({'q': params})
+        api_endpoint = self.api_base + endpoint
         content = self.oauth.request(
                     method,
                     api_endpoint,
+                    params = params,
                     headers={'User-Agent':'Semantics3 Python Lib/0.2'}
                   )
         print(content)
@@ -106,29 +103,42 @@ class Semantics3Request:
                 if(offset < total_count):
                     self.run_query()
 
-    def query(self, method, endpoint, **kwargs):
-        content = self.fetch(method, endpoint, json.dumps(kwargs)).content.decode('utf-8')
-        return json.loads(content)
+    def query(self, method, endpoint, kwargs):
+        if method == "GET":
+            params = { 'q' : json.dumps(kwargs) }
+        else:
+            params = kwargs
+        response = self.fetch(method, endpoint, params)
+        if response.status_code < 400:
+            return response.json()
+        else:
+            if response.json().get('code') != 'OK':
+                response_body = response.json()
+                raise Semantics3Error(response_body.get('code'),
+                                      response_body.get('message'))
 
-    def run_query(self, endpoint=None, method='GET'):
+    def run_query(self, endpoint=None, method='GET', params=None):
         endpoint = endpoint or self.endpoint
-        if not endpoint in self.data_query:
-            raise Semantics3Error("No query built",
-                      "You need to first createa query using the add() method.")
-        query = self.data_query[endpoint]
-        self.query_result = self.query(
-            method,
-            endpoint,
-            **query
-        )
-
-        if self.query_result['code'] != 'OK':
-            raise Semantics3Error(self.query_result['code'],
-                                  self.query_result['message'])
-
-    def get(self, endpoint=None):
-        self.run_query(endpoint)
+        if method == "GET":
+            try:
+                query = self.data_query[endpoint]
+            except KeyError:
+                query = params or {}
+            self.query_result = self.query(
+                method,
+                endpoint,
+                query
+            )
+        else:
+            self.query_result = self.query(
+                method,
+                endpoint,
+                params
+            )
         return self.query_result
+    
+    def get(self, endpoint=None):
+        return self.run_query(endpoint)
 
     def clear_query(self):
         self.data_query = {}
