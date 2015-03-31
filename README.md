@@ -14,7 +14,7 @@ pip install semantics3
 To install the egg directly from github
 
 ```bash
-pip install -e git+ssh://git@github.com:Semantics3/semantics3-python.git#egg=semantics3
+pip install -e git+ssh://git@github.com/Semantics3/semantics3-python.git#egg=semantics3
 ```
 
 To install the latest source:
