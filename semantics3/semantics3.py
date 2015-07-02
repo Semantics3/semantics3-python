@@ -109,6 +109,11 @@ class Semantics3Request:
         else:
             params = kwargs
         response = self.fetch(method, endpoint, params)
+        try:
+            response_json = response.json()
+        except:
+            raise Exception("Malformed JSON")
+        
         if response.status_code < 400:
             return response.json()
         else:
