@@ -91,7 +91,7 @@ for i in sem3.iter():
 	print "We are at page = %s" % page_no
     print "The results for this page are:"
     print i
-    sleep(1) # prevents rate-limit errors
+    sleep(1)
 ```
 
 ### UPC Query
