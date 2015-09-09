@@ -20,7 +20,7 @@ def read(fname):
 
 setup(
     name="semantics3",
-    version="0.2",
+    version="0.3.1",
     author="Shawn Tan",
     author_email="shawn@semantics3.com",
     description=("Semantics3 Products API"),
