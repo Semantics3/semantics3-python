@@ -7,6 +7,7 @@ except ImportError:
 
 install_requires = [
     'requests-oauthlib >= 0.4.0',
+    'urlnorm'
 ]
 def read(fname):
    try:
