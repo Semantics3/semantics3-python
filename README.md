@@ -4,6 +4,8 @@ See https://www.semantics3.com for more information.
 
 API documentation can be found at https://www.semantics3.com/docs/
 
+_NOTE_ : Semantics3 Python API Library isn't fully compatible with Python3. The library is best used on Python 2.7
+
 ## Installation
 semantics3 can be installed through pip:
 
