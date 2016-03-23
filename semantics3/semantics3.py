@@ -45,7 +45,6 @@ class Semantics3Request:
                     params = params,
                     headers={'User-Agent':'Semantics3 Python Lib/0.2'}
                   )
-        print(content)
         return content
 
     def remove(self, endpoint, *fields):
