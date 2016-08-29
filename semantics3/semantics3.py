@@ -1,6 +1,6 @@
 import json
 from requests_oauthlib import OAuth1Session
-from urlnorm import norm
+from urltools import normalize
 
 try:
     import urllib.parse as urllib
@@ -38,7 +38,7 @@ class Semantics3Request:
         self.api_base = api_base
 
     def fetch(self, method, endpoint, params):
-        api_endpoint = norm(self.api_base + endpoint)
+        api_endpoint = normalize(self.api_base + endpoint)
         content = self.oauth.request(
                     method,
                     api_endpoint,

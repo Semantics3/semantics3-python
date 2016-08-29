@@ -16,7 +16,7 @@ class TestWebhooksAPI(unittest.TestCase):
 
         :returns: @todo
         """
-        result = sem3.run_query('webhooks', "POST", {"webhook_uri" : "http://148.251.44.168:5000"})
+        result = sem3.run_query('webhooks', "POST", {"webhook_uri" : "https://sem3-webhooks-verification.ngrok.io"})
         self.assertIn('created', result)
     
     def test_get_webhooks(self):
