@@ -112,7 +112,7 @@ class Semantics3Request:
                     self.run_query()
 
     def query(self, method, endpoint, kwargs):
-        if method == "GET":
+        if method.lower() == "get":
             params = { 'q' : json.dumps(kwargs) }
         else:
             params = kwargs
@@ -132,7 +132,7 @@ class Semantics3Request:
 
     def run_query(self, endpoint=None, method='GET', params=None):
         endpoint = endpoint or self.endpoint
-        if method == "GET":
+        if method.lower() == "get":
             try:
                 query = self.data_query[endpoint]
             except KeyError:
