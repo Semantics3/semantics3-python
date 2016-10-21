@@ -1,9 +1,10 @@
 from semantics3 import Products
 import unittest
+from os import environ
 
 sem3 = Products(
-        api_key = "",
-        api_secret = ""
+        api_key = environ["SEM3_API_KEY"],
+        api_secret = environ["SEM3_API_SECRET"]
         )
 
 
