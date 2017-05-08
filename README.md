@@ -159,7 +159,7 @@ params = {
     webhook_uri : "http://mydomain.com/webhooks-callback-url"
 }
 
-webhook = sem3.run_query("webhooks", params, "POST")
+webhook = sem3.run_query("webhooks", "POST", params)
 print webhook["id"]
 print webhook["webhook_uri"]
 ```
