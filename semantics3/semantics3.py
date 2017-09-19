@@ -1,6 +1,6 @@
 import json
 from requests_oauthlib import OAuth1Session
-from urltools import normalize
+from url_normalize import url_normalize
 
 try:
     import urllib.parse as urllib
@@ -38,7 +38,7 @@ class Semantics3Request:
         self.api_base = api_base
 
     def fetch(self, method, endpoint, params):
-        api_endpoint = normalize(self.api_base + endpoint)
+        api_endpoint = url_normalize(self.api_base + endpoint)
         if method.lower() in ['get', 'delete']:
             content = self.oauth.request(
                         method,
@@ -121,7 +121,7 @@ class Semantics3Request:
             response_json = response.json()
         except:
             raise Exception("Malformed JSON")
-        
+
         if response.status_code < 400:
             return response.json()
         else:
@@ -149,7 +149,7 @@ class Semantics3Request:
                 params
             )
         return self.query_result
-    
+
     def get(self, endpoint=None):
         return self.run_query(endpoint)
 
