@@ -8,25 +8,25 @@ sem3 = Semantics3Request(
         )
 
 
-class TestWebhooksAPI(unittest.TestCase):
+class TestWebhoOKsAPI(unittest.TestCase):
 
-    """Docstring for TestWebhooks. """
+    """Docstring for TestWebhoOKs. """
 
     def test_webhook_registration(self):
         """@todo: Docstring for test_webhook_registration.
 
         :returns: @todo
         """
-        result = sem3.run_query('webhooks', "POST", {"webhook_uri" : "http://decce40a.ngrok.io"})
-        self.assertIn('created', result)
-    
+        result = sem3.run_query('webhooks', "POST", {"webhook_uri" : "https://semantics3-basic-webhook-receiver-11ozacc07xtw.runkit.sh/"})
+        self.assertIn('created', result["results"])
+
     def test_get_webhooks(self):
         """@todo: Docstring for test_get_webhooks.
         :returns: @todo
 
         """
         webhooks = sem3.run_query('webhooks', "GET")
-        self.assertEqual(webhooks['status'], 'ok')
+        self.assertEqual(webhooks['code'], 'OK')
 
     def test_register_event(self):
         """@todo: Docstring for function.
@@ -35,7 +35,7 @@ class TestWebhooksAPI(unittest.TestCase):
 
         """
         webhooks = sem3.run_query('webhooks', "GET")
-        if len(webhooks['data']):
+        if len(webhooks['results']):
             webhook_id = webhooks['data'][0]['id']
             params = {
                     "type": "price.change",
@@ -48,22 +48,22 @@ class TestWebhooksAPI(unittest.TestCase):
                         }
                     }
             response = sem3.run_query('webhooks/%s/events' % webhook_id, "POST", params)
-            self.assertEqual(response['status'], 'ok')
+            self.assertEqual(response['code'], 'OK')
             del params['constraints']
             response1 = sem3.run_query('webhooks/%s/events' % webhook_id, "POST", params)
-            self.assertEqual(response1['status'], 'ok')
+            self.assertEqual(response1['code'], 'OK')
         else:
-            self.assertEqual(webhooks['status'], 'ok')
-    
+            self.assertEqual(webhooks['code'], 'OK')
+
     def test_delete_webhook(self):
         """@todo: Docstring for test_delete_webhook.
         :returns: @todo
 
         """
         webhooks = sem3.run_query('webhooks', "GET")
-        if len(webhooks['data']):
-            webhook_id = webhooks['data'][0]['id']
+        if len(webhooks['results']):
+            webhook_id = webhooks['results'][0]['id']
             response = sem3.run_query('webhooks/%s' % webhook_id, "DELETE")
-            self.assertEqual(response['status'], 'ok')
+            self.assertEqual(response['code'], 'OK')
         else:
-            self.assertEqual(webhooks['status'], 'ok')
+            self.assertEqual(webhooks['code'], 'OK')
