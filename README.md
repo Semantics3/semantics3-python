@@ -43,8 +43,8 @@ from semantics3 import Products
 
 # Set up a client to talk to the Semantics3 API using your Semantics3 API Credentials
 sem3 = Products(
-	api_key = "SEM3xxxxxxxxxxxxxxxxxxxxxx",
-	api_secret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    api_key=os.environ['SEMANTICS3_API_KEY'],
+    api_secret=os.environ['SEMANTICS3_API_SECRET']
 )
 ```
 
@@ -93,6 +93,31 @@ for i in sem3.iter():
     print i
     sleep(1) #respect rate limit
 ```
+
+### Request Timeout
+
+The RealTime API has a hard server-side timeout of **60s** (up to **120s** for some customers) by default after which the client request will be aborted. You can 
+override this behaviour by setting a client-side timeout value as shown below:
+
+```python
+import os
+from requests.exceptions import ReadTimeout, ConnectTimeout
+from semantics3 import Products
+
+sem3 = Products(
+    api_key=os.environ['SEMANTICS3_API_KEY'],
+    api_secret=os.environ['SEMANTICS3_API_SECRET'],
+    timeout=5
+)
+
+try:
+    sem3.run_query('realtime/skus', 'GET', { 'url': 'https://www.walmart.com/ip/325408104' })
+except (ReadTimeout, ConnectTimeout):
+    print('request timed out in 5s')
+
+```
+
+
 
 ### UPC Query
 

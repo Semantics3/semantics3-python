@@ -5,8 +5,8 @@ except ImportError:
 
 
 class Products(Semantics3Request):
-    def __init__(self, api_key, api_secret, api_base='https://api.semantics3.com/v1/'):
-        Semantics3Request.__init__(self, api_key, api_secret, 'products', api_base)
+    def __init__(self, api_key, api_secret, api_base='https://api.semantics3.com/v1/', timeout=120):
+        Semantics3Request.__init__(self, api_key, api_secret, 'products', api_base, timeout)
 
     def get_products(self):
         return self.get()
