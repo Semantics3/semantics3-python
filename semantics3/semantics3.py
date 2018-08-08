@@ -15,7 +15,7 @@ except ImportError:
 
 class Semantics3Request:
 
-    def __init__(self, api_key=None, api_secret=None, endpoint=None, api_base='https://api.semantics3.com/v1/'):
+    def __init__(self, api_key=None, api_secret=None, endpoint=None, api_base='https://api.semantics3.com/v1/', timeout=120):
         if api_key is None:
             raise Semantics3Error(
                 'API Credentials Missing',
@@ -36,6 +36,7 @@ class Semantics3Request:
         self.query_result = None
         self.cache_size = 10
         self.api_base = api_base
+        self.timeout = timeout
 
     def fetch(self, method, endpoint, params):
         api_endpoint = url_normalize(self.api_base + endpoint)
@@ -44,14 +45,16 @@ class Semantics3Request:
                         method,
                         api_endpoint,
                         params = params,
-                        headers={'User-Agent':'Semantics3 Python Lib/0.2'}
+                        headers={'User-Agent':'Semantics3 Python Lib/0.2'},
+                        timeout=self.timeout
                       )
         else:
             content = self.oauth.request(
                         method,
                         api_endpoint,
                         data = json.dumps(params),
-                        headers={'User-Agent':'Semantics3 Python Lib/0.2', 'Content-Type':'application/json'}
+                        headers={'User-Agent':'Semantics3 Python Lib/0.2', 'Content-Type':'application/json'},
+                        timeout=self.timeout
                       )
         return content
 
