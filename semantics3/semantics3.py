@@ -1,3 +1,4 @@
+import time
 import json
 from requests_oauthlib import OAuth1Session
 from url_normalize import url_normalize
@@ -37,9 +38,17 @@ class Semantics3Request:
         self.cache_size = 10
         self.api_base = api_base
         self.timeout = timeout
+        self.oauth_session_start = int(time.time())
+
+    def _validate_session(self):
+        duration = int(time.time()) - self.oauth_session_start
+        if duration >= 60:
+            self.oauth.close()
+            self.__init__()
 
     def fetch(self, method, endpoint, params):
         api_endpoint = url_normalize(self.api_base + endpoint)
+        self._validate_session()
         if method.lower() in ['get', 'delete']:
             content = self.oauth.request(
                         method,
