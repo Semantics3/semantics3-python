@@ -1,7 +1,10 @@
 import time
 import json
+import logging
+
 from requests_oauthlib import OAuth1Session
 from url_normalize import url_normalize
+from urllib3.exceptions import HTTPError
 
 try:
     import urllib.parse as urllib
@@ -40,15 +43,8 @@ class Semantics3Request:
         self.timeout = timeout
         self.oauth_session_start = int(time.time())
 
-    def _validate_session(self):
-        duration = int(time.time()) - self.oauth_session_start
-        if duration >= 60:
-            self.oauth.close()
-            self.__init__()
-
     def fetch(self, method, endpoint, params):
         api_endpoint = url_normalize(self.api_base + endpoint)
-        self._validate_session()
         if method.lower() in ['get', 'delete']:
             content = self.oauth.request(
                         method,
@@ -56,7 +52,7 @@ class Semantics3Request:
                         params = params,
                         headers={'User-Agent':'Semantics3 Python Lib/0.2'},
                         timeout=self.timeout
-                      )
+                    )
         else:
             content = self.oauth.request(
                         method,
@@ -64,7 +60,7 @@ class Semantics3Request:
                         data = json.dumps(params),
                         headers={'User-Agent':'Semantics3 Python Lib/0.2', 'Content-Type':'application/json'},
                         timeout=self.timeout
-                      )
+                    )
         return content
 
     def remove(self, endpoint, *fields):
@@ -128,7 +124,25 @@ class Semantics3Request:
             params = { 'q' : json.dumps(kwargs) }
         else:
             params = kwargs
-        response = self.fetch(method, endpoint, params)
+
+        #-- Everytime we receive either of the following errors, retry the request
+        #-- 1. Connection reset by peer
+        try:
+            response = self.fetch(method, endpoint, params)
+        except (ConnectionResetError, ConnectionError) as e:
+            duration = int(time.time()) - self.oauth_session_start
+            logging.debug("Encountered connection error, duration since client created: {d}s, Recreating semantics3 client".format(d=duration))
+            logging.debug(str(e))
+            self.oauth.close() #-- Close connection pool associated with current session
+            self.__init__() #-- Initiate new client
+            return self.query(method, endpoint, kwargs)
+        
+        #-- 2. Gateway timeout (status code 504) error retry
+        if response.status_code == 504:
+            logging.debug("Encountered a gateway timeout error, Sending the request again")
+            return self.query(method, endpoint, kwargs)
+        
+        #-- Check if response received is a malformed json
         try:
             response_json = response.json()
         except:
