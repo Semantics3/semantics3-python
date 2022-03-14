@@ -119,28 +119,41 @@ class Semantics3Request:
                 if(offset < total_count):
                     self.run_query()
 
-    def query(self, method, endpoint, kwargs):
+    def query(self, method, endpoint, kwargs, retry_attempt=0):
         if method.lower() == "get":
             params = { 'q' : json.dumps(kwargs) }
         else:
             params = kwargs
 
+        #-- Following is a patch/hack made to circumvent issues encountered during
+        #-- migrating sem3 infra to k8s sem3stage and sem3prod clusters accordingly
+        #-- however this doesn't address the root cause, it only bypass the issue by retries on client side
+        #-- it performs auto retry (upto 1 attempt) whenever we encounter following errors
+        
         #-- Everytime we receive either of the following errors, retry the request
         #-- 1. Connection reset by peer
         try:
             response = self.fetch(method, endpoint, params)
         except (ConnectionResetError, ConnectionError) as e:
             duration = int(time.time()) - self.oauth_session_start
-            logging.debug("Encountered connection error, duration since client created: {d}s, Recreating semantics3 client".format(d=duration))
-            logging.debug(str(e))
-            self.oauth.close() #-- Close connection pool associated with current session
-            self.__init__() #-- Initiate new client
-            return self.query(method, endpoint, kwargs)
+            if retry_attempt <= 1:
+                logging.debug("Encountered connection error, duration since client created: {d}s, Recreating semantics3 client".format(d=duration))
+                logging.debug(str(e))
+                self.oauth.close() #-- Close connection pool associated with current session
+                self.__init__() #-- Initiate new client
+                return self.query(method, endpoint, kwargs, retry_attempt+1)
+            else:
+                logging.debug("Encountered connection error, duration since client created: {d}s, Exceeded max retry attempts, Skipping")
+                logging.debug(str(e))
+                
         
         #-- 2. Gateway timeout (status code 504) error retry
         if response.status_code == 504:
-            logging.debug("Encountered a gateway timeout error, Sending the request again")
-            return self.query(method, endpoint, kwargs)
+            if retry_attempt <= 1:
+                logging.debug("Encountered a gateway timeout error, Sending the request again")
+                return self.query(method, endpoint, kwargs, retry_attempt+1)
+            else:
+                logging.debug("Encountered a gateway timeout error, Exceeded max retry attempts, Skipping")
         
         #-- Check if response received is a malformed json
         try:
