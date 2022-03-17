@@ -1,10 +1,12 @@
+import re
 import time
 import json
 import logging
 
 from requests_oauthlib import OAuth1Session
 from url_normalize import url_normalize
-from urllib3.exceptions import HTTPError
+#from urllib3.exceptions import HTTPError, ProtocolError
+from requests.exceptions import ConnectionError, RequestException
 
 try:
     import urllib.parse as urllib
@@ -119,6 +121,12 @@ class Semantics3Request:
                 if(offset < total_count):
                     self.run_query()
 
+    def _reinitialize_client(self):
+        duration = int(time.time()) - self.oauth_session_start
+        logging.debug("Encountered connection error. Duration since client created: {d}s, Recreating semantics3 client".format(d=duration))
+        self.oauth.close() #-- Close connection pool associated with current session
+        self.__init__() #-- Initiate new client
+
     def query(self, method, endpoint, kwargs, retry_attempt=0):
         if method.lower() == "get":
             params = { 'q' : json.dumps(kwargs) }
@@ -134,18 +142,17 @@ class Semantics3Request:
         #-- 1. Connection reset by peer
         try:
             response = self.fetch(method, endpoint, params)
-        except (ConnectionResetError, ConnectionError) as e:
-            duration = int(time.time()) - self.oauth_session_start
-            if retry_attempt <= 1:
-                logging.debug("Encountered connection error, duration since client created: {d}s, Recreating semantics3 client".format(d=duration))
-                logging.debug(str(e))
-                self.oauth.close() #-- Close connection pool associated with current session
-                self.__init__() #-- Initiate new client
+        except (ConnectionResetError, ConnectionAbortedError, ConnectionError, RequestException) as e:
+            err_str = str(e)
+            if retry_attempt <= 1 and re.search("Connection (?:aborted|reset by peer)", err_str):
+                logging.debug(err_str)
+                self._reinitialize_client()
                 return self.query(method, endpoint, kwargs, retry_attempt+1)
+            elif retry_attempt > 1:
+                logging.debug("Exceeded max retry attempts, Skipping. Error: {e}".format(e=str(e)))
             else:
-                logging.debug("Encountered connection error, duration since client created: {d}s, Exceeded max retry attempts, Skipping")
-                logging.debug(str(e))
-                
+                logging.debug("Encountered unknown error: {e}".format(e=str(e)))
+
         
         #-- 2. Gateway timeout (status code 504) error retry
         if response.status_code == 504:
