@@ -125,13 +125,16 @@ class Semantics3Request:
         duration = int(time.time()) - self.oauth_session_start
         logging.debug("Encountered connection error. Duration since client created: {d}s, Recreating semantics3 client".format(d=duration))
         self.oauth.close() #-- Close connection pool associated with current session
-        self.__init__() #-- Initiate new client
+        self.oauth = OAuth1Session(self.api_key, client_secret=self.api_secret)
+        self.oauth_session_start = int(time.time())
 
     def query(self, method, endpoint, kwargs, retry_attempt=0):
         if method.lower() == "get":
             params = { 'q' : json.dumps(kwargs) }
         else:
             params = kwargs
+
+        response = None
 
         #-- Following is a patch/hack made to circumvent issues encountered during
         #-- migrating sem3 infra to k8s sem3stage and sem3prod clusters accordingly
@@ -148,19 +151,22 @@ class Semantics3Request:
                 logging.debug(err_str)
                 self._reinitialize_client()
                 return self.query(method, endpoint, kwargs, retry_attempt+1)
-            elif retry_attempt > 1:
+            elif retry_attempt > 1 and re.search("Connection (?:aborted|reset by peer)", err_str):
                 logging.debug("Exceeded max retry attempts, Skipping. Error: {e}".format(e=str(e)))
+                raise Semantics3Error(500, str(e))
             else:
                 logging.debug("Encountered unknown error: {e}".format(e=str(e)))
+                raise Semantics3Error(500, str(e))
 
         
-        #-- 2. Gateway timeout (status code 504) error retry
+        #-- 2. Gateway timeout (status code 504) error
         if response.status_code == 504:
             if retry_attempt <= 1:
                 logging.debug("Encountered a gateway timeout error, Sending the request again")
                 return self.query(method, endpoint, kwargs, retry_attempt+1)
             else:
                 logging.debug("Encountered a gateway timeout error, Exceeded max retry attempts, Skipping")
+                raise Semantics3Error(504, 'Bad Gateway')
         
         #-- Check if response received is a malformed json
         try:
